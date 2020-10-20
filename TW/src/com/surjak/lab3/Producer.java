@@ -7,26 +7,25 @@ import java.util.Random;
  */
 public class Producer implements Runnable {
     private Buffer buffer;
-    int size;
-    int successfulTry = 0;
+    private Histogram histogram;
+    private final int size;
+    private int counter = 0;
 
-    public Producer(Buffer buffer, int M) {
+    public Producer(Buffer buffer,Histogram histogram, int M) {
         this.buffer = buffer;
-        size = new Random().nextInt(M);
+        this.size = M;
+        this.histogram = histogram;
     }
 
     @Override
     public void run() {
-
         while (true) {
-            buffer.pop(size);
-            this.successfulTry++;
+            buffer.put(size);
             if(Thread.currentThread().isInterrupted()){
-                System.out.println("Exiting" + size);
-//                buffer.writeCondition.signalAll();
-//                buffer.readCondition.signalAll();
+                histogram.add("PRODUCER-"+size, this.counter);
                 return;
             }
+            this.counter++;
         }
     }
 
