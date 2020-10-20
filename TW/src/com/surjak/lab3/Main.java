@@ -3,6 +3,7 @@ package com.surjak.lab3;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -33,8 +34,11 @@ public class Main {
             executorService.submit(producer);
             executorService.submit(consumer);
         }
+        System.out.println("Running...");
+        System.out.println("Click enter to draw Histogram");
 
-        waitSomeTime(2);
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine(); //wait for user Input
 
         executorService.shutdownNow();
         executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
