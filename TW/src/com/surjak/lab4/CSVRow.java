@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * Created by surja on 27.10.2020
  */
-public class CSVRow {
+public class CSVRow implements Comparable<CSVRow> {
     public int bufferSize;
     public String producerOrConsumer;
     public int size;
@@ -35,5 +35,14 @@ public class CSVRow {
                 ", randomization=" + randomization +
                 ", counter=" + counter +
                 '}';
+    }
+
+    @Override
+    public int compareTo(CSVRow o) {
+        int b = producerOrConsumer.compareTo(o.producerOrConsumer);
+        if (b == 0) {
+            int compare = Integer.compare(this.size, o.size);
+            return compare == 0 ? Integer.compare(this.counter, o.counter) : compare;
+        } else return b;
     }
 }
