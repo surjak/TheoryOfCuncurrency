@@ -14,9 +14,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class Main {
 
-    public static final int M = 16384;
-    private static final int numberOfConsumers = 14;
-    private static final int numberOfProducers = 14;
+    public static final int M = 5000;
+    private static final int numberOfConsumers = 1000;
+    private static final int numberOfProducers = 1000;
 
     public static void main(String[] args) throws InterruptedException {
         Buffer buffer = new Buffer(2 * M);
