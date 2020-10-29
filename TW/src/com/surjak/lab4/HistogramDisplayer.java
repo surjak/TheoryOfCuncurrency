@@ -69,6 +69,8 @@ public class HistogramDisplayer implements Displayer {
         oneLine.append("COUNTER");
         bw.write(oneLine.toString());
         bw.newLine();
+        bw.flush();
+        bw.close();
     }
 
 }
