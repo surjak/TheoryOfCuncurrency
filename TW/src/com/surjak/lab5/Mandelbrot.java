@@ -70,9 +70,9 @@ public class Mandelbrot extends JFrame {
                     zx = tmp;
                     iter--;
                 }
-                synchronized (this) {
+//                synchronized (this) {
                     I.setRGB(x, y, iter | (iter << 8));
-                }
+//                }
             }
         }
     }

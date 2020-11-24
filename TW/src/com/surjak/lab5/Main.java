@@ -11,6 +11,7 @@ public class Main {
         Mandelbrot mandelbrot = new Mandelbrot();
         mandelbrot.run();
         mandelbrot.printTimeMap();
+        mandelbrot.setVisible(true);
 
         System.out.println("****************************************");
 
