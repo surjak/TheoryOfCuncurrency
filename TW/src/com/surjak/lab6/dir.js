@@ -9,10 +9,10 @@ const countLines = (file, cb) => { fs.createReadStream(file).on('data', function
                 .split(/\r\n|[\n\r\u0085\u2028\u2029]/g)
                 .length-1;
             }).on('end', function() {
-                console.log(file, count);
+                // console.log(file, count);
                 cb()
             }).on('error', function(err) {
-                console.error(err);
+                // console.error(err);
                 cb()
             });
             
@@ -36,5 +36,5 @@ const callAsync = async () => {
         console.log(t2 - t1);
     })
 }
-// callSync()
-callAsync()
+callSync()
+// callAsync()
