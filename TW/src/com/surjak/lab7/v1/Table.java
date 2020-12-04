@@ -20,19 +20,30 @@ public class Table {
 
     public Table(int numOfPhilosophers) {
         this.numOfPhilosophers = numOfPhilosophers;
-        this.conditions = IntStream
-                .range(0, numOfPhilosophers)
-                .boxed()
-                .map(integer -> lock.newCondition())
-                .collect(Collectors.toList());
+        initConditionList(numOfPhilosophers);
+        initPhilosophers(numOfPhilosophers);
+        initForksPerPhilosopher();
+    }
+
+    public void initForksPerPhilosopher() {
+        this.availableForksPerPhilosopher = philosophers.stream()
+                .collect(Collectors.toMap(Philosopher::getId, philosopher -> 2));
+    }
+
+    public void initPhilosophers(int numOfPhilosophers) {
         this.philosophers = IntStream
                 .range(0, numOfPhilosophers)
                 .boxed()
                 .map(integer -> new Philosopher(integer, this))
                 .collect(Collectors.toList());
+    }
 
-        this.availableForksPerPhilosopher = philosophers.stream()
-                .collect(Collectors.toMap(Philosopher::getId, philosopher -> 2));
+    public void initConditionList(int numOfPhilosophers) {
+        this.conditions = IntStream
+                .range(0, numOfPhilosophers)
+                .boxed()
+                .map(integer -> lock.newCondition())
+                .collect(Collectors.toList());
     }
 
     public void run() throws InterruptedException {
@@ -50,38 +61,58 @@ public class Table {
                 return;
             }
         }
-        Integer leftId = (id + 1) % numOfPhilosophers;
-        Integer leftAvailableForks = availableForksPerPhilosopher.get(leftId);
+        Integer leftId = getLeft(id);
+        Integer rightId = getRight(id);
 
-        Integer rightId = id - 1 < 0 ? numOfPhilosophers - 1 : id - 1;
+        decreaseLeftAndRight(leftId, rightId);
+
+        lock.unlock();
+    }
+
+    public void decreaseLeftAndRight(Integer leftId, Integer rightId) {
+        Integer leftAvailableForks = availableForksPerPhilosopher.get(leftId);
         Integer rightAvailableForks = availableForksPerPhilosopher.get(rightId);
 
         availableForksPerPhilosopher.put(leftId, leftAvailableForks - 1);
         availableForksPerPhilosopher.put(rightId, rightAvailableForks - 1);
-
-        lock.unlock();
     }
 
     public void giveForks(int id) {
         lock.lock();
-        Integer leftId = (id + 1) % numOfPhilosophers;
-        Integer leftAvailableForks = availableForksPerPhilosopher.get(leftId);
+        Integer leftId = getLeft(id);
 
-        Integer rightId = id - 1 < 0 ? numOfPhilosophers - 1 : id - 1;
+        Integer rightId = getRight(id);
 
-        Integer rightAvailableForks = availableForksPerPhilosopher.get(rightId);
+        increaseLeftAndRight(leftId, rightId);
 
-        availableForksPerPhilosopher.put(leftId, leftAvailableForks + 1);
-        availableForksPerPhilosopher.put(rightId, rightAvailableForks + 1);
-
-        conditions.get(leftId).signal();
-        conditions.get(rightId).signal();
+        signalNeighbours(leftId, rightId);
 
         lock.unlock();
     }
 
+    public void increaseLeftAndRight(Integer leftId, Integer rightId) {
+        Integer leftAvailableForks = availableForksPerPhilosopher.get(leftId);
+        Integer rightAvailableForks = availableForksPerPhilosopher.get(rightId);
+
+        availableForksPerPhilosopher.put(leftId, leftAvailableForks + 1);
+        availableForksPerPhilosopher.put(rightId, rightAvailableForks + 1);
+    }
+
+    public void signalNeighbours(Integer leftId, Integer rightId) {
+        conditions.get(leftId).signal();
+        conditions.get(rightId).signal();
+    }
+
+    public int getRight(int id) {
+        return id - 1 < 0 ? numOfPhilosophers - 1 : id - 1;
+    }
+
+    public int getLeft(int id) {
+        return (id + 1) % numOfPhilosophers;
+    }
+
     public void interrupt(){
-        philosophers.forEach(philosopher -> philosopher.interrupt());
+        philosophers.forEach(Philosopher::interrupt);
     }
 
 }
